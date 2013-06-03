@@ -18,7 +18,7 @@ from trac.ticket.model import Ticket, Milestone
 from trac.ticket.query import Query, QueryModule
 from trac.ticket.web_ui import TicketModule
 from trac.util.compat import any
-from trac.util.datefmt import parse_date, utc
+from trac.util.datefmt import parse_date
 from trac.util.text import empty
 from trac.web.api import IRequestHandler, IRequestFilter
 from trac.web.chrome import (
@@ -72,14 +72,14 @@ def _getdate(d, tz):
     except:
         return None
 
-def _parse_month_arg(string):
+def _parse_month_arg(string, tzinfo):
     if string:
         try:
             tt = time.strptime(string, '%Y-%m')
             return date(*tt[:3])
         except:
             pass
-    return datetime.now().date().replace(day=1)
+    return datetime.now(tzinfo).date().replace(day=1)
 
 def _parse_duration_arg(arg, tzinfo):
     default = datetime.now(tzinfo).date(), 7
@@ -314,8 +314,8 @@ class TicketCalendar(object):
         db = self.env.get_read_db()
         tickets = query.execute(req, db)
         context = Context.from_request(req, 'query')
-        return query.template_data(context, tickets, None, datetime.now(utc),
-                                   req)
+        return query.template_data(context, tickets, None,
+                                   datetime.now(req.tz), req)
 
     def gen_calendar(self, tickets, query, month, width=None, nav=True):
         milestones = self._get_milestones()
@@ -759,7 +759,7 @@ Usage:
             start, period = _parse_duration_arg(kwargs.get('duration'), req.tz)
             return calendar.render_list(data['tickets'], start, period)
         else:
-            month = _parse_month_arg(kwargs.get('month'))
+            month = _parse_month_arg(kwargs.get('month'), req.tz)
             return calendar.gen_calendar(data['tickets'], query, month, width,
                                          nav=False)
 
@@ -793,7 +793,7 @@ Usage:
         redirect = 'update' in req.args
 
         if req.path_info == '/ticketcalendar-box':
-            month = _parse_month_arg(req.args.get('_month'))
+            month = _parse_month_arg(req.args.get('_month'), req.tz)
             if redirect:
                 req.redirect(calendar.get_box_href(query, month))
             return self._process_box(req, query, data, month)

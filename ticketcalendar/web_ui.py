@@ -81,13 +81,13 @@ def _parse_month_arg(string):
             pass
     return datetime.now().date().replace(day=1)
 
-def _parse_duration_arg(arg):
-    default = datetime.now(utc).date(), 7
+def _parse_duration_arg(arg, tzinfo):
+    default = datetime.now(tzinfo).date(), 7
     if not arg or '/P' not in arg:
         return default
     start, period = arg.split('/P', 1)
     try:
-        start = parse_date(start, tzinfo=utc)
+        start = parse_date(start, tzinfo=tzinfo)
     except:
         start = None
     if not start:
@@ -756,7 +756,7 @@ Usage:
         width = kwargs.get('width')
 
         if kwargs.get('type') == 'list':
-            start, period = _parse_duration_arg(kwargs.get('duration'))
+            start, period = _parse_duration_arg(kwargs.get('duration'), req.tz)
             return calendar.render_list(data['tickets'], start, period)
         else:
             month = _parse_month_arg(kwargs.get('month'))
@@ -799,7 +799,8 @@ Usage:
             return self._process_box(req, query, data, month)
 
         if req.path_info == '/ticketcalendar-list':
-            start, period = _parse_duration_arg(req.args.getfirst('_duration'))
+            start, period = _parse_duration_arg(req.args.getfirst('_duration'),
+                                                req.tz)
             if redirect:
                 req.redirect(calendar.get_list_href(query, start, period))
             return self._process_list(req, query, data, start, period)

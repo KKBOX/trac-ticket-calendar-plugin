@@ -31,6 +31,8 @@ try:
     from babel import Locale
     from babel.core import LOCALE_ALIASES, UnknownLocaleError
     from babel.dates import get_day_names, get_month_names, format_date
+    def is_weekend(date, locale):
+        return locale.weekend_start <= date.weekday() <= locale.weekend_end
 except ImportError:
     LOCALE_ALIASES = {}
     def get_day_names(width=None, context=None, locale=None):
@@ -47,6 +49,8 @@ except ImportError:
         return names
     def format_date(date=None, format=None, locale=None):
         return str(date)
+    def is_weekend(date, locale):
+        return date.weekday() in (5, 6)  # Sat, Sun
 
 
 from ticketcalendar.api import (
@@ -364,7 +368,7 @@ class TicketCalendar(object):
             tdclass = []
             if day == today:
                 tdclass.append('today')
-            if day.weekday() in (5, 6):
+            if is_weekend(day, locale):
                 tdclass.append('weekend')
 
             formatted_day = format_date(day, format='long', locale=locale)

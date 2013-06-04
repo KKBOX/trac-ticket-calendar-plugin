@@ -31,7 +31,7 @@ extra.setdefault('cmdclass', {})
 
 setup(
     name='TicketCalendarPlugin',
-    version='0.12.0.1',
+    version='0.12.0.2',
     author='OpenGroove,Inc.',
     author_email='trac@opengroove.com',
     maintainer='Jun Omae',

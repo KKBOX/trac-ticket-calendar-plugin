@@ -52,6 +52,7 @@ except ImportError:
 from ticketcalendar.api import (
     _, tag_, N_, gettext, add_domain, TEXTDOMAIN,
     Option, IntOption, ListOption,
+    get_today,
 )
 
 
@@ -79,10 +80,10 @@ def _parse_month_arg(string, tzinfo):
             return date(*tt[:3])
         except:
             pass
-    return datetime.now(tzinfo).date().replace(day=1)
+    return get_today(tzinfo).replace(day=1)
 
 def _parse_duration_arg(arg, tzinfo):
-    default = datetime.now(tzinfo).date(), 7
+    default = get_today(tzinfo), 7
     if not arg or '/P' not in arg:
         return default
     start, period = arg.split('/P', 1)
@@ -185,7 +186,8 @@ class TicketCalendar(object):
     def get_list_href(self, query, start=None, period=7):
         kwargs = {}
         if start is not None:
-            kwargs['_duration'] = '%s/P%dD' % (start.strftime('%Y-%m-%d'), period)
+            kwargs['_duration'] = '%s/P%dD' % (start.strftime('%Y-%m-%d'),
+                                               period)
         return self._get_href('list', query, kwargs)
 
     def get_box_href(self, query, month=None):
@@ -327,11 +329,10 @@ class TicketCalendar(object):
         due_date_format = self.mod.due_date_format
 
         if not month:
-            month = datetime.now(req.tz)
-            month = datetime(month.year, month.month, 1).date()
+            month = get_today(req.tz).replace(day=1)
 
         # init data
-        today = datetime.now(req.tz).date()
+        today = get_today(req.tz)
 
         # generate calendar data
         weeks = self._get_month_calendar(month.year, month.month,
@@ -409,7 +410,8 @@ class TicketCalendar(object):
             def nav_pager(d):
                 return tag.span(
                     tag.a(u'\u25c4', href=nav_href(d - timedelta(days=1))),
-                    tag.a(_("Current month"), href=nav_href(date.today())),
+                    tag.a(_("Current month"),
+                          href=nav_href(get_today(req.tz))),
                     tag.a(u'\u25ba', href=nav_href(d + timedelta(days=31))),
                     class_='ticketcalendar-pager')
 
@@ -471,7 +473,7 @@ class TicketCalendar(object):
 
         req = self.req
         if not start_date or not period:
-            start_date = date.today()
+            start_date = get_today(req.tz)
             period = 7
         locale = self._get_locale()
 
@@ -847,7 +849,7 @@ Usage:
             query.desc and ',desc=1' or '')
 
         add_ctxtnav(req, _('Calendar view'),
-                    calendar.get_box_href(query, date.today()))
+                    calendar.get_box_href(query, get_today(req.tz)))
         add_ctxtnav(req, _('List view'))
 
         return 'ticketcalendar_calendar.html', data, None

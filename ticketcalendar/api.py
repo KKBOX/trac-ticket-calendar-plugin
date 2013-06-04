@@ -7,6 +7,8 @@
 # you should have received as part of this distribution.
 #
 
+from datetime import datetime
+
 from trac.config import Option, ListOption, IntOption
 from trac.util import arity
 from trac.util.translation import domain_functions, dgettext
@@ -41,3 +43,7 @@ else:
 Option = _option_with_tx(Option)
 IntOption = _option_with_tx(IntOption)
 ListOption = _option_with_tx(ListOption)
+
+
+def get_today(tzinfo):
+    return datetime.now(tzinfo).date()

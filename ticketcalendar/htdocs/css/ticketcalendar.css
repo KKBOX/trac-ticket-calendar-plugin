@@ -119,25 +119,11 @@
   margin: 0.1em 0;
 }
 
-/*
-.ticketcalendar > table.calendar td ul li:hover,
-.ticketcalendar-popup-list ul li:hover {
-  overflow: visible;
-  position: relative;
-  z-index: 1;
+.ticketcalendar-ticket {
+ padding: 0.8em 1.2em;
+ max-width: 100%;
 }
-
-.ticketcalendar > table.calendar td ul li:hover span,
-.ticketcalendar-popup-list ul li:hover span {
-  background-color: #fff;
-}
-*/
-
-.ticketcalendar.ticket-detail {
-  margin: 2em;
-  width: auto;
-  max-width: 50em;
-}
+.ticketcalendar-ticket > #content { padding: 0 }
 
 .ticketcalendar-popup-list {
   padding: 1em;
@@ -227,7 +213,7 @@
   margin: 0.2em 0;
 }
 
-.edit-ticket {
+.ticketcalendar-edit {
   text-align: right;
 }
 

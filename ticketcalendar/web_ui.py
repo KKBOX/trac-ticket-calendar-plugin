@@ -795,7 +795,7 @@ Usage:
                                       if key in field))
                           for name, field in data['fields'].iteritems())
         add_script_data(req, {'properties': properties,
-                              'modes': data['modes']})
+                              'modes': self._get_modes(data)})
         redirect = 'update' in req.args
 
         if req.path_info == '/ticketcalendar-box':
@@ -810,6 +810,14 @@ Usage:
             if redirect:
                 req.redirect(calendar.get_list_href(query, start, period))
             return self._process_list(req, query, data, start, period)
+
+    def _get_modes(self, data):
+        def add_text_prop(value):
+            value = value.copy()
+            value['text'] = value['name']  # for Trac 0.12, see trac:r9958
+            return value
+        return dict((type, [add_text_prop(value) for value in mode])
+                    for type, mode in data['modes'].iteritems())
 
     def _render_query_form_filters(self, req, data):
         if 'query_href' not in req.session:

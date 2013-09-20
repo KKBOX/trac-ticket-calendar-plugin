@@ -27,36 +27,11 @@ from trac.web.chrome import (
 )
 from trac.wiki.api import IWikiMacroProvider, parse_args
 
-try:
-    from babel import Locale
-    from babel.core import LOCALE_ALIASES, UnknownLocaleError
-    from babel.dates import get_day_names, get_month_names, format_date
-    def is_weekend(date, locale):
-        return locale.weekend_start <= date.weekday() <= locale.weekend_end
-except ImportError:
-    LOCALE_ALIASES = {}
-    def get_day_names(width=None, context=None, locale=None):
-        names = dict()
-        for day in range(0, 7):
-            dt = datetime(2001, 1, day + 1)
-            names[day] = dt.strftime('%a')
-        return names
-    def get_month_names(width=None, context=None, locale=None):
-        names = dict()
-        for m in range(1, 13):
-            dt = datetime(2001, m, 1)
-            names[m] = dt.strftime('%B')
-        return names
-    def format_date(date=None, format=None, locale=None):
-        return str(date)
-    def is_weekend(date, locale):
-        return date.weekday() in (5, 6)  # Sat, Sun
-
-
 from ticketcalendar.api import (
+    Locale, LOCALE_ALIASES, UnknownLocaleError,
     _, tag_, N_, gettext, add_domain, TEXTDOMAIN,
     Option, IntOption, ListOption,
-    get_today,
+    get_day_names, get_month_names, format_date, is_weekend, get_today,
 )
 
 

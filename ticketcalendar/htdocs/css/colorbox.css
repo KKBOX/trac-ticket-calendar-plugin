@@ -43,7 +43,7 @@ a.overlayview-rawlink {
     overflow: auto;
 }
 #cboxLoadingGraphic {
-    background: url("loading.gif") no-repeat scroll center center transparent;
+    background: url(../../common/loading.gif) no-repeat scroll center center transparent;
     height: 100%;
     left: 0;
     position: absolute;

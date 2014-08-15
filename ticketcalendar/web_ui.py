@@ -294,8 +294,9 @@ class TicketCalendar(object):
     def template_data(self, req, query, kwargs=None):
         db = self.env.get_read_db()
         tickets = query.execute(req, db)
+	filtered_tickets = [ticket for ticket in tickets if 'TICKET_VIEW' in req.perm(Ticket(self.env, int(ticket['id'])).resource)]
         context = Context.from_request(req, 'query')
-        return query.template_data(context, tickets, None,
+        return query.template_data(context, filtered_tickets, None,
                                    datetime.now(req.tz), req)
 
     def gen_calendar(self, tickets, query, month, width=None, nav=True):
@@ -843,6 +844,7 @@ Usage:
 
     def _process_ticket_detail(self, req):
         ticket = Ticket(self.env, int(req.args.get('id')))
+	req.perm(ticket.resource).require('TICKET_VIEW')
         data = {'ticket': ticket,
                 'fields': self._prepare_fields(req, ticket),
                 'description_change': None,
